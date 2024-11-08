@@ -2,7 +2,7 @@ import "react-native-reanimated";
 
 import { StatusBar, Text, View } from "react-native";
 
-export default function Layout() {
+export default function App() {
   return (
     <View
       style={{
