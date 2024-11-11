@@ -1,18 +1,29 @@
+import Empty from "@/components/Empty";
 import SearchInput from "@/components/SearchInput";
 import Trending from "@/components/Trending";
-import React from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import VideoCard from "@/components/VideoCard";
+import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
+import React, { useState } from "react";
+import { FlatList, Image, RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
+import useAppwrite from "../../lib/useAppwrite";
 const Home = () => {
+  const { data: posts, refetch } = useAppwrite(getAllPosts);
+  const { data: latestPosts } = useAppwrite(getLatestPosts);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
   return (
-    <SafeAreaView className="bg-primary">
+    <SafeAreaView className="bg-primary h-full">
       <FlatList
-        data={[]}
-        keyExtractor={(item) => item.$id}
-        renderItem={({ item }) => (
-          <Text className="text-white text-3xl">{item.id}</Text>
-        )}
+        data={posts}
+        keyExtractor={(item: any) => item.$id}
+        renderItem={({ item }: any) => <VideoCard video={item} />}
         ListHeaderComponent={() => (
           <View className="my-6 px-4 space-y-6">
             <View className="justify-between items-start flex-row mb-6">
@@ -42,11 +53,17 @@ const Home = () => {
               <Text className="text-gray-100 text-lg font-pregular mb-3">
                 Latest Videos
               </Text>
-              <Trending posts={[{ id: 1 }, { id: 2 }]} />
+              <Trending posts={latestPosts ?? []} />
             </View>
           </View>
         )}
-        ListEmptyComponent={() => <Text className="text-white">Empty</Text>}
+        ListEmptyComponent={() => (
+          <Empty
+            title="No videos found"
+            subtitle="No videos created yet, Be the first to create one"
+          />
+        )}
+        refreshControl={<RefreshControl refreshing={refreshing} />}
       />
     </SafeAreaView>
   );
