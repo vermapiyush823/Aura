@@ -2,6 +2,7 @@ import Empty from "@/components/Empty";
 import SearchInput from "@/components/SearchInput";
 import Trending from "@/components/Trending";
 import VideoCard from "@/components/VideoCard";
+import { useGlobalContext } from "@/context/GlobalProvider";
 import { getAllPosts, getLatestPosts } from "@/lib/appwrite";
 import React, { useState } from "react";
 import { FlatList, Image, RefreshControl, Text, View } from "react-native";
@@ -18,6 +19,7 @@ const Home = () => {
     await refetch();
     setRefreshing(false);
   };
+  const { user } = useGlobalContext();
   return (
     <SafeAreaView className="bg-primary h-full">
       <FlatList
@@ -32,7 +34,7 @@ const Home = () => {
                   Welcome back,
                 </Text>
                 <Text className="text-2xl font-psemibold text-white">
-                  Piyush
+                  {user?.username}
                 </Text>
               </View>
               <View className="mt-1.5">
@@ -43,12 +45,7 @@ const Home = () => {
                 />
               </View>
             </View>
-            <SearchInput
-              value=""
-              placeholder="Search for a video topic"
-              handleChangeText={(e: any) => {}}
-              otherStyles=""
-            />
+            <SearchInput initialQuery="" />
             <View className="w-full flex-1 pt-5 pb-8">
               <Text className="text-gray-100 text-lg font-pregular mb-3">
                 Latest Videos
